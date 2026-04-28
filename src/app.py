@@ -52,7 +52,7 @@ def handle_hello():
 
     return jsonify(response_body), 200
 
-# CREATING USE FOR DEVELOPMENT
+# CREATING USER FOR DEVELOPMENT
 
 @app.route('/seed', methods=['GET'])
 def seed():
@@ -74,12 +74,20 @@ def get_people():
     transform = [person.serialize() for person in people]
     return jsonify({"sucess": True, "data": transform}), 200
 
+# GET PLANETS ------------
+
+@app.route("/planets", methods=["GET"])
+def get_planets():
+    planets = db.session.execute(select(Planet)).scalars().all()
+    transform = [planet.serialize() for planet in planets]
+    return jsonify({"sucess": True, "data": transform}), 200
+
 # ADD PPL ------------
 
 @app.route("/people", methods=["POST"])
 def add_people():
     body = request.get_json()
-    if not body['name'] or not body["hair_color"] or not body['birth_year'] or not body['eye_color'] or not body['gender'] or not body['height'] or not body['hair_color'] or not body['height'] or not body['mass']:
+    if not body['name'] or not body["hair_color"] or not body['birth_year'] or not body['eye_color'] or not body['gender'] or not body['height'] or not body['height'] or not body['mass']:
         return jsonify({'sucess': False, 'msg': 'missing data'}), 403
 
     new_person = People(
@@ -121,11 +129,18 @@ def add_planet():
 
 # GET PPL BY ID -----------
 
-@app.route("/people/byId/<int:id>", methods=["GET"])
+@app.route("/people/<int:id>", methods=["GET"])
 def get_one_person(id):
     person = db.session.get(People, id)
     return jsonify({"sucess": True, "data": person.serialize()}), 200
 
+# GET PLANET DETAILS -----------
+
+@app.route("/planet/<int:id>", methods=["GET"])
+def get_planet_details(id):
+    planet = db.session.get(Planet, id)
+    return jsonify({"sucess": True, "data": planet.serialize()}), 200
+    
 # UPDATE PPL -------------
 
 @app.route("/people/update/<int:id>", methods=["PUT"])
